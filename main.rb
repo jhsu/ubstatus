@@ -18,7 +18,7 @@ class Site
   def up?
     r = Net::HTTP.get_response(self.url, self.path)
     self.response_code = r.code.to_i
-    self.response_code >= 200 ? return true : return false
+    self.response_code >= 200 ? true : false
   end
   
   def to_s
