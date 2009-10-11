@@ -18,7 +18,13 @@ class Site
   def up?
     r = Net::HTTP.get_response(self.url, self.path)
     self.response_code = r.code.to_i
-    self.response_code >= 200 ? true : false
+    if self.response_code >= 200 
+      self.status = "OK"
+      true
+    else
+      self.status = "Bork'd"
+      false
+    end
   end
   
   def to_s
@@ -38,7 +44,7 @@ get '/' do
     rescue Timeout::Error
       next
     end 
-    @sites << { :site => @site.url, :status => status }
+    @sites << @site
   end
     haml :index
 end
@@ -57,4 +63,4 @@ __END__
 @@ index
 %ul
   - @sites.each do |s|
-    %li= "#{s[:site]} &rarr;  #{s[:status]}"
+    %li= "#{@site} &rarr;  #{@site.status}"
