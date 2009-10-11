@@ -1,8 +1,30 @@
 require 'sinatra'
 require 'net/http'
 require 'haml'
+require 'backgrounded'
 
 use_in_file_templates!
+
+class Site
+  attr_accessor :url, :path, :status, :response_code
+  
+  backgrounded :check
+
+  def initialize(url, path)
+    self.url = url
+    self.url = path
+  end
+
+  def up?
+    r = Net::HTTP.get_response(self.url, self.path)
+    self.response_code = r.code.to_i
+    self.response_code >= 200 ? return true : return false
+  end
+  
+  def to_s
+    "#{self.url}"
+  end
+end
 
 get '/' do
   @sites = []
@@ -11,12 +33,12 @@ get '/' do
   ["myub.buffalo.edu","/"], 
   ["helpdesk.buffalo.edu","/Admin/INFO/"]].each do |site|
     begin
-      r = Net::HTTP.get_response(site[0], site[1])
+      @site = Site.new(site[0],site[1])
+      status = @site.up? ? "up" : "down"
     rescue Timeout::Error
       next
     end 
-    status = r.code.to_i  >= 200 && r.code.to_i <400
-    @sites << { :site => site[0], :status => status }
+    @sites << { :site => @site.url, :status => status }
   end
     haml :index
 end
