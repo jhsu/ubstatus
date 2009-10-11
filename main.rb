@@ -16,7 +16,7 @@ class Site
 
   def up?
     r = Net::HTTP.get_response(URI.parse(self.url))
-    self.response_code = r.code.to_i
+    self.response_code = r.code
     if self.response_code =~ /2|3\d{2}/
       self.status = "OK"
       true
