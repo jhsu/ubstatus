@@ -6,19 +6,18 @@ require 'backgrounded'
 use_in_file_templates!
 
 class Site
-  attr_accessor :url, :path, :status, :response_code
+  attr_accessor :url, :status, :response_code
   
   backgrounded :check
 
-  def initialize(url, path)
-    self.url = url
-    self.url = path
+  def initialize(url)
+    self.url = url.insert(0, "http://") unless url.match(/^http\:\/\//)
   end
 
   def up?
-    r = Net::HTTP.get_response(self.url, self.path)
+    r = Net::HTTP.get_response(URI.parse(self.url))
     self.response_code = r.code.to_i
-    if self.response_code >= 200 
+    if self.response_code =~ /2|3\d{2}/
       self.status = "OK"
       true
     else
@@ -30,23 +29,24 @@ class Site
   def to_s
     "#{self.url}"
   end
+
 end
 
 get '/' do
   @sites = []
-  [["www.buffalo.edu","/"], 
-  ["ublearns.buffalo.edu","/"], 
-  ["myub.buffalo.edu","/"], 
-  ["helpdesk.buffalo.edu","/Admin/INFO/"]].each do |site|
+  [["www.buffalo.edu"], 
+  ["ublearns.buffalo.edu"], 
+  ["myub.buffalo.edu"], 
+  ["helpdesk.buffalo.edu/Admin/INFO/"]].each do |site|
     begin
-      @site = Site.new(site[0],site[1])
-      status = @site.up? ? "up" : "down"
+      @site = Site.new(site)
+      @site.up?
+      @sites << @site
     rescue Timeout::Error
       next
     end 
-    @sites << @site
   end
-    haml :index
+  haml :index
 end
 
 
