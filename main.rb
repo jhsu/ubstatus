@@ -4,7 +4,13 @@ require 'net/http'
 require 'haml'
 require 'lib/models/site.rb'
 
-set :database, 'sqlite://ubstatus.db'
+configure do 
+  if (ENV['DATABASE_URL'])
+    set :database, ENV['DATABASE_URL']
+  else
+    set :database, "sqlite://ubstatus.db" 
+  end
+end
 
 use_in_file_templates!
 
