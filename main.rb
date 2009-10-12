@@ -38,4 +38,4 @@ __END__
 @@ index
 %ul
   - @sites.each do |s|
-    %li= "#{@site} &rarr;  #{@site.status}"
+    %li= "#{@site.to_s} &rarr;  #{@site.status}"
