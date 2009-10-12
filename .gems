@@ -1,2 +1,3 @@
+sqlite3-ruby
 wireframe-backgrounded --source gems.github.com
 sinatra-activerecord --source gemcutter.org
