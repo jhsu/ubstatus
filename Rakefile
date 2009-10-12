@@ -1,9 +1,9 @@
 require 'sinatra/activerecord/rake'
-require 'pp'
+require 'main'
 
 task :env do
   $:.unshift '.'
-  require 'main'
+# require 'main'
 end
 
 namespace :dev do 
