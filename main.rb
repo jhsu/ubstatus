@@ -16,12 +16,7 @@ use_in_file_templates!
 
 get '/' do
   @sites = Site.all
-  @sites.each do |site|
-    site = Site.new(site)
-    site.up?
-    @sites << site
-  end
-  haml :index
+  haml :index, :locals => {:sites => @sites }
 end
 
 
@@ -37,5 +32,5 @@ __END__
 
 @@ index
 %ul
-  - @sites.each do |s|
-    %li= "#{@site.to_s} &rarr;  #{@site.status}"
+  - sites.each do |s|
+    %li= "#{s} &rarr; #{s.status}"
