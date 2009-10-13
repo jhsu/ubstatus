@@ -55,7 +55,9 @@ __END__
   %head
     %title
   %body
-    = yield
+    #container
+      %h1 UB Apps Status Dashboard
+      = yield
 
 
 @@ index
