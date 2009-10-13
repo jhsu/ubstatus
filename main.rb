@@ -3,6 +3,7 @@ require 'sinatra/activerecord'
 require 'net/http'
 require 'haml'
 require 'lib/models/site.rb'
+require 'lib/models/user.rb'
 
 configure do 
   if (ENV['DATABASE_URL'])
@@ -17,6 +18,17 @@ use_in_file_templates!
 get '/' do
   @sites = Site.all
   haml :index, :locals => {:sites => @sites }
+end
+
+post '/update_all' do
+  if params[:api_key]
+    redirect '/' unless User.find(:first, :conditions => {:api_key => params[:api_key]})
+    @sites = Site.all
+    @sites.each {|s| s.check! }
+    haml :index, :locals => {:sites => @sites }
+  else 
+    redirect '/'    
+  end
 end
 
 
