@@ -40,6 +40,8 @@ post '/update/:url' do
     else
       @site = Site.new
       @site.set_url = params[:url]
+      @site.status = 200
+      @site.save
     end
   end
   redirect '/'    
