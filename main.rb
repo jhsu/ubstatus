@@ -15,6 +15,7 @@ end
 
 use_in_file_templates!
 
+
 get '/' do
   @sites = Site.all
   haml :index, :locals => {:sites => @sites }
@@ -29,6 +30,19 @@ post '/update_all' do
   else 
     redirect '/'    
   end
+end
+
+post '/update/:url' do
+  if params[:api_key] && params[:status]
+    if @site = Site.find(:first, :conditions => "url like '%#{params[:url]}%'")
+      @site.status = params[:status].to_i
+      @site.save
+    else
+      @site = Site.new
+      @site.set_url = params[:url]
+    end
+  end
+  redirect '/'    
 end
 
 
