@@ -2,6 +2,7 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require 'net/http'
 require 'haml'
+require 'sass'
 require 'lib/models/site.rb'
 require 'lib/models/user.rb'
 
@@ -11,10 +12,26 @@ configure do
   else
     set :database, "sqlite://ubstatus.db" 
   end
+  set :views, File.dirname(__FILE__) + '/lib/views'
 end
 
 use_in_file_templates!
 
+helpers do
+  def stylesheets(styles, media="screen")
+    html = ""
+    styles.each do |style|
+      tag = Haml::Engine.new("%link{:href => '/#{style}.css',  :media => '#{media}', :rel => 'stylesheet'}")
+      html << tag.render
+    end
+    html
+  end
+end
+
+get '/stylesheet.css' do
+    content_type 'text/css', :charset => 'utf-8'
+    sass :stylesheet
+end
 
 get '/' do
   @sites = Site.all
@@ -32,9 +49,10 @@ post '/update_all' do
   end
 end
 
-post '/update/:url' do
+post '/update/:id' do
   if params[:api_key] && params[:status]
-    if @site = Site.find(:first, :conditions => "url like '%#{params[:url]}%'")
+    # if @site = Site.find(:first, :conditions => "url like '%#{params[:url]}%'")
+    if @site = Site.find(params[:id])
       @site.status = params[:status].to_i
       @site.save
     else
@@ -53,7 +71,11 @@ __END__
 @@ layout
 %html
   %head
-    %title
+    %meta{'http-equiv' => 'Content-Type', :content => 'text/html; charset=utf-8'}/
+
+    = stylesheets ['stylesheet']
+
+    %title UB Apps Status Dashboard
   %body
     #container
       %h1 UB Apps Status Dashboard
@@ -61,6 +83,12 @@ __END__
 
 
 @@ index
-%ul
+%dl
   - sites.each do |s|
-    %li= "#{s} &rarr; #{s.status}"
+    %dt
+      %a{ :href => s.url }= s
+    %dd= s.status
+
+
+
+
