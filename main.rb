@@ -2,7 +2,6 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require 'net/http'
 require 'haml'
-require 'sass'
 require 'lib/models/site.rb'
 require 'lib/models/user.rb'
 
