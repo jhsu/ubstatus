@@ -33,7 +33,7 @@ get '/stylesheet.css' do
 end
 
 get '/' do
-  @sites = Site.all
+  @sites = Site.all(:order => "id")
   haml :index, :locals => {:sites => @sites }
 end
 
