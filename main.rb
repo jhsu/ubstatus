@@ -48,17 +48,13 @@ post '/update_all' do
   end
 end
 
-post '/update/:id' do
+post '/update/:url' do
   if params[:api_key] && params[:status]
-    # if @site = Site.find(:first, :conditions => "url like '%#{params[:url]}%'")
-    if @site = Site.find(params[:id])
+    if User.find_by_api_key(params[:api_key], :limit => 1) && @site = Site.first(:conditions => "url like '%#{params[:url]}%'")
       @site.status = params[:status].to_i
       @site.save
     else
-      @site = Site.new
-      @site.set_url = params[:url]
-      @site.status = 200
-      @site.save
+      error 404
     end
   end
   redirect '/'    
